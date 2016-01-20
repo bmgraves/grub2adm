@@ -6,5 +6,8 @@ grub2 boot options in a simple and pain free way.
 
 
 # Roadmap
-TBD
+- (in-Progress) Get working Argument parsing:                  
+- (PENDING) List available boot options in intelligent way.
+- (PENDING) Ability to set-default boot options
+- (PENDING) Future Options go here.
 
