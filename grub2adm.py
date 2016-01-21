@@ -21,28 +21,30 @@
 ##############################################################################
 import argparse
 
+# Functions go here
+def list_all(args = 0):
+        print "hit list"
+
+def set_default(args):
+        print "hit set defaults " + args.string
+
+# /Functions
+
 # Parser config
-parser = argparse.ArgumentParser(prog='grub2adm', description='A better way to Grub2')
+parser = argparse.ArgumentParser(description='A better way to Grub2')
+
 # Primary Commands
 subparsers = parser.add_subparsers(title='Available Commands')
 
 parser_list = subparsers.add_parser('list', help='list available boot options')
-parser_list.set_defaults(func=list)
+parser_list.set_defaults(func=list_all)
 
-#parser_set_default = subparsers.add_parser('set-default', help='set default boot option')
-#parser_set_default.add_argument('string')
-#parser_set_default.set_defaults(func=setd)
+parser_set_default = subparsers.add_parser('set-default', help='set default boot option')
+parser_set_default.add_argument('string')
+parser_set_default.set_defaults(func=set_default)
 
 ## /Primary Commands
 
-
-
-# functions for work
-def list():
-        print "hit list"
-
-#def setd(args):
-#       print "hit set defaults " + args.string
 
 
 
