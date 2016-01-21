@@ -39,16 +39,16 @@ GRUB_CFG = BOOT_PATH + "/grub.cfg"
 #  boot options.
 def list_menu(args = 0):
 	# Note: This is currentingly Work In Progress
-	for line in get_raw_menu():
+	for line in get_menu():
 		print line
 
 
-# GET_RAW_MENU():
+# GET_MENU():
 # This command is based on the fedoraprojects method of "grep -P "submenu|^menuentry" /boot/grub2/grub.cfg | cut -d "'" -f2"
 # to list menu items.
 # Check the GRUB_CFG file for lines containing the regex held in the "search" List
 # Then send the results to "create_menu" to process them
-def get_raw_menu():
+def get_menu():
 	search = []
 	search.append(re.compile('^menuentry'))
 	search.append(re.compile('submenu'))
@@ -56,7 +56,7 @@ def get_raw_menu():
 	for line in open(GRUB_CFG):
 		if any(x.match(line) for x in search):
 			tmp.append(line)
-	create_menu(tmp)
+	return create_menu(tmp)
 
 # CREATE_MENU():
 #  This will formatt out the undesirable parts of the menu display, and try to get just the description line that
@@ -64,7 +64,8 @@ def get_raw_menu():
 def create_menu(menu_in):
 	x = []
 	for line in menu_in:
-		print line.split('\'')[1] 
+		x.append(line.split('\'')[1]) 
+	return x
 		
 
 ############################
