@@ -2,7 +2,7 @@
 
 # Author  : Brandon M. Graves
 # Created : 20JAN2016
-# Modified: 20JAN2016
+# Modified: 22JAN2016
 #############################################################################
 # COPYRIGHT (C) 2016, Brandon M. Graves, http://metashell.net
 #
@@ -25,7 +25,7 @@ import argparse
 import re
 import sys
 import platform
-
+from blessings import Terminal
 # CONFIG:
 ###########
 # Location of your grub2 files
@@ -71,7 +71,11 @@ def list_menu(args = 0):
 			pad = 2
 			
 		if line == get_default():
-			print "{" + str(items.index(line)) + "}".ljust(pad) + line
+			t = Terminal()
+			x = "{" + str(items.index(line)) + "}".ljust(pad) + line
+			print t.green(x)
+			#print t.red(x)
+			#print t.red_on_white(x)
 			
 		else:
 			print "[" + str(items.index(line)) + "]".ljust(pad) + line
