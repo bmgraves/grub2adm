@@ -29,18 +29,41 @@ import re
 # Location of your grub2 files
 BOOT_PATH = "/boot/grub2/"
 GRUB_CFG = BOOT_PATH + "/grub.cfg"
+GRUB_ENV = BOOT_PATH + "/grubenv"
 
 # Functions go here
 #########################################
+
+# GET_DEFAULT()
+# Gets the currently set default boot option.
+def get_default():
+	x = re.compile('^saved_entry')
+	for line in open(GRUB_ENV):
+		if x.match(line):
+			return line
+	
+
 
 # LIST_MENU(): 
 #  This function is intended to get a list of all bootable kernels currently known by grub2
 #  and display them in a sane way that can be used by the rest of the application to handle
 #  boot options.
+# "args = 0" is a sanity check to avoid complicated logic in  the program start, since other
+# options other than "list" require arguments.
 def list_menu(args = 0):
 	# Note: This is currentingly Work In Progress
-	for line in get_menu():
-		print line
+	# NOTE: You were also going to add a "current" line,
+	# 	But wanted to do it intelligently so "current" and "Default" didn't conflict
+	items = get_menu()
+	print "Grub2 Boot Menu:"
+	print "---------------"
+	for line in items:
+		if line is get_default():
+			print "[" + str(items.index(line)) + "] {{DEFAULT}}" + line
+		else:
+			print "[" + str(items.index(line)) + "] " + line
+
+	print "---------------"
 
 
 # GET_MENU():
@@ -59,8 +82,8 @@ def get_menu():
 	return create_menu(tmp)
 
 # CREATE_MENU():
-#  This will formatt out the undesirable parts of the menu display, and try to get just the description line that
-#  grub2 cares about for its config purposes.
+# This will formatt out the undesirable parts of the menu display, and try to get just the description line that
+# grub2 cares about for its config purposes.
 def create_menu(menu_in):
 	x = []
 	for line in menu_in:
@@ -72,26 +95,30 @@ def create_menu(menu_in):
 def set_default(args):
         print "hit set defaults " + args.string
 
-# /Functions
+# END FUNCTIONS
 
-# Parser config
+# PARSER CONFIG. 
+# This is the basic Parser config area.
 parser = argparse.ArgumentParser(description='A better way to Grub2')
-
-# Primary Commands
 subparsers = parser.add_subparsers(title='Available Commands')
+###
 
+# LIST:
+# Parser for the "list" option
 parser_list = subparsers.add_parser('list', help='list available boot options')
 parser_list.set_defaults(func=list_menu)
+###
 
+# SET-DEFAULT
+# Parser for the "set-default" option.
 parser_set_default = subparsers.add_parser('set-default', help='set default boot option')
 parser_set_default.add_argument('string')
 parser_set_default.set_defaults(func=set_default)
+###
 
-## /Primary Commands
+# END PARSER CONFIG
 
-
-
-
-#Begin program
+# Begin program:  This is some basic start program logic,
+# Likely nothing should go wrong below this line.
 args = parser.parse_args()
 args.func(args)
