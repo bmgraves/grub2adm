@@ -33,9 +33,16 @@ from subprocess import call
 BOOT_PATH = "/boot/grub2/"
 GRUB_CFG = BOOT_PATH + "/grub.cfg"
 GRUB_ENV = BOOT_PATH + "/grubenv"
+VERSION = ".01a"
+
+
 
 # Functions go here
 #########################################
+def show_version():
+	print "grub2adm, VERSION: " + VERSION + ", http://metashell.net"
+	print "PROJECT: https://github.com/bmgraves/grub2adm"
+	print "AUTHOR: Brandon M. Graves"
 
 # CHECK_INT():
 #  Simple check to see if something is an integer or string.
@@ -151,6 +158,7 @@ def set_default(args):
 # PARSER CONFIG. 
 # This is the basic Parser config area.
 parser = argparse.ArgumentParser(description='A better way to Grub2')
+parser.add_argument('-v','--version', help='Display Version information', action='version', version='%(prog)s VERSION: ' + str(VERSION))
 subparsers = parser.add_subparsers(title='Available Commands')
 ###
 
@@ -174,5 +182,6 @@ parser_set_default.set_defaults(func=set_default)
 if len(sys.argv)==1:
 	parser.print_usage()
 	sys.exit(1)
+
 args = parser.parse_args()
 args.func(args)
