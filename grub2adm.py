@@ -33,7 +33,7 @@ from subprocess import call
 BOOT_PATH = "/boot/grub2/"
 GRUB_CFG = BOOT_PATH + "/grub.cfg"
 GRUB_ENV = BOOT_PATH + "/grubenv"
-VERSION = ".01"
+VERSION = ".02"
 
 
 
