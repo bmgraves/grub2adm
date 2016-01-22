@@ -25,4 +25,9 @@ grub2adm set-default - This can be used with either a "string" value, or a numer
 - (PENDING)  List-boot Options
 
 
+# Tested on:
+- CentOS: 7
+
+
+
 
