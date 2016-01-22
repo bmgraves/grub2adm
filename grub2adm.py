@@ -37,6 +37,10 @@ VERSION = ".01"
 
 
 
+def print_error(x):
+	t = Terminal()
+	print '['+ t.red('FAILED') + '] ' + x 
+	
 # Functions go here
 #########################################
 def show_version():
@@ -73,27 +77,32 @@ def get_current():
 # options other than "list" require arguments.
 def list_menu(args = 0):
 	# Note: This is currentingly Work In Progress
-	items = get_menu()
 	t = Terminal()
-	print "---------------"
-	print "Grub2 Boot Menu:"
-	print "Current Kernel: " + t.red(get_current())
-	print "Default Option: " + t.green(get_default())
-	print "---------------"
-	for line in items:
-		if items.index(line) < 10:
-			pad = 3
-		else:
-			pad = 2
-			
-		if line == get_default():
-			print t.green("{") + t.red(str(items.index(line))) + t.green("}".ljust(pad) + line)
-			
-		else:
-			print "[" + t.red(str(items.index(line))) + "]".ljust(pad) + line
+	try:
+		items = get_menu()
+		print "---------------"
+		print "Grub2 Boot Menu:"
+		print "Current Kernel: " + t.red(get_current())
+		print "Default Option: " + t.green(get_default())
+		print "---------------"
+		for line in items:
+			if items.index(line) < 10:
+				pad = 3
+			else:
+				pad = 2
+				
+			if line == get_default():
+				print t.green("{") + t.red(str(items.index(line))) + t.green("}".ljust(pad) + line)
+				
+			else:
+				print "[" + t.red(str(items.index(line))) + "]".ljust(pad) + line
 
 
-	print "---------------"
+		print "---------------"
+	except IOError:
+		print_error('You need to be root to perform this action.')
+	except:
+		print_error("Unknown Error")
 
 
 # GET_MENU():
@@ -106,10 +115,12 @@ def get_menu():
 	search.append(re.compile('^menuentry'))
 	search.append(re.compile('submenu'))
 	tmp = []
+	t = Terminal()
 	for line in open(GRUB_CFG):
 		if any(x.match(line) for x in search):
 			tmp.append(line)
 	return create_menu(tmp)
+		
 
 # CREATE_MENU():
 # This will formatt out the undesirable parts of the menu display, and try to get just the description line that
@@ -128,28 +139,35 @@ def create_menu(menu_in):
 # that entry as the choice. It then will try and set the default boot option.
 # it will then change the default boot option using grub2's "grub2-set-default" command
 def set_default(args):
-	x = args.string
-	t = Terminal()
-	if check_int(x):
-		tmp = get_menu()
-		#if (x <= (len(tmp) - 1)):
-		if (int(x) <= (len(tmp) - 1)):
-			choice = tmp[int(x)]
-		else:
-			print "[" + t.red("FAILURE") + "] Option Not Found" 
-			return
-
-	else:
-		choice = x
+	try:
+		x = args.boot_selection
+		t = Terminal()
+		if check_int(x):
+			tmp = get_menu()
+			#if (x <= (len(tmp) - 1)):
+			if (int(x) <= (len(tmp) - 1)):
+				choice = tmp[int(x)]
+			else:
+				print "[" + t.red("FAILURE") + "] Option Not Found" 
+				return
 	
-	if choice in get_menu():
-		call(['grub2-set-default', choice])
-		print "[" + t.green("SUCCESS") + "] " + t.green(choice) 
-			
-	else:
-		print "[" + t.red("FAILURE") + "] Option Not Found: " 
-		print t.red(choice) 
-		return
+		else:
+			choice = x
+		
+		if choice in get_menu():
+			call(['grub2-set-default', choice])
+			print "[" + t.green("SUCCESS") + "] " + t.green(choice) 
+				
+		else:
+			print_error('Option Not Found: ') 
+			print t.red(choice) 
+			return
+	except IOError:
+		print_error("You Must be root to perform this action")
+	except:
+	
+		print_error("Unknown Error")
+		
 	
 		
 
@@ -171,7 +189,7 @@ parser_list.set_defaults(func=list_menu)
 # SET-DEFAULT
 # Parser for the "set-default" option.
 parser_set_default = subparsers.add_parser('set-default', help='set default boot option')
-parser_set_default.add_argument('<boot selection>', help='This can be either the numerical value listed in "grub2adm list" or the full string value of the boot option.')
+parser_set_default.add_argument('boot_selection', help='This can be either the numerical value listed in "grub2adm list" or the full string value of the boot option.')
 parser_set_default.set_defaults(func=set_default)
 ###
 
