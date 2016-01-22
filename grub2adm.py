@@ -23,6 +23,8 @@
 ###########
 import argparse
 import re
+import sys
+import platform
 
 # CONFIG:
 ###########
@@ -40,7 +42,10 @@ def get_default():
 	x = re.compile('^saved_entry')
 	for line in open(GRUB_ENV):
 		if x.match(line):
-			return line
+			return line.split('=')[1].rstrip('\n')
+
+def get_current():
+	return platform.release()	
 	
 
 
@@ -56,12 +61,21 @@ def list_menu(args = 0):
 	# 	But wanted to do it intelligently so "current" and "Default" didn't conflict
 	items = get_menu()
 	print "Grub2 Boot Menu:"
+	print "Current Kernel: " + get_current()
+	print "Default Option: " + get_default()
 	print "---------------"
 	for line in items:
-		if line is get_default():
-			print "[" + str(items.index(line)) + "] {{DEFAULT}}" + line
+		if items.index(line) < 10:
+			pad = 3
 		else:
-			print "[" + str(items.index(line)) + "] " + line
+			pad = 2
+			
+		if line == get_default():
+			print "{" + str(items.index(line)) + "}".ljust(pad) + line
+			
+		else:
+			print "[" + str(items.index(line)) + "]".ljust(pad) + line
+
 
 	print "---------------"
 
@@ -120,5 +134,8 @@ parser_set_default.set_defaults(func=set_default)
 
 # Begin program:  This is some basic start program logic,
 # Likely nothing should go wrong below this line.
+if len(sys.argv)==1:
+	parser.print_usage()
+	sys.exit(1)
 args = parser.parse_args()
 args.func(args)

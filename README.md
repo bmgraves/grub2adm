@@ -11,3 +11,5 @@ grub2 boot options in a simple and pain free way.
 - (PENDING) Ability to set-default boot options
 - (PENDING) Future Options go here.
 
+
+
