@@ -5,11 +5,21 @@ in the use of grub2 are not readily apparent. It is the intention of this progra
 grub2 boot options in a simple and pain free way.
 
 
+# Installation and usage
+With elevated privledges run the "install.sh" script, this will install all the necessary files.
+the default install location for the command is "/usr/sbin" this is changable within the install.sh script.
+
+Currently there are two working features that can be used:
+
+grub2adm list - Lists all the currently known boot options.
+grub2adm set-default - This can be used with either a "string" value, or a numerical value as found in the "list" option.
+
 # Roadmap
 - (COMPLETE) Get working Argument parsing.                 
-- (IN-PROGRESS) List available boot options in intelligent way.
-- (PENDING) Ability to set-default boot options
-- (PENDING) Future Options go here.
+- (COMPLETE) List available boot options in intelligent way.
+- (COMPLETE) Ability to set-default boot options
+- (PENDING)  Set grub2 Password
+- (PENDING)  List-boot Options
 
 
 

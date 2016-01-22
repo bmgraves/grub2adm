@@ -26,6 +26,7 @@ import re
 import sys
 import platform
 from blessings import Terminal
+from subprocess import call
 # CONFIG:
 ###########
 # Location of your grub2 files
@@ -36,6 +37,14 @@ GRUB_ENV = BOOT_PATH + "/grubenv"
 # Functions go here
 #########################################
 
+# CHECK_INT():
+#  Simple check to see if something is an integer or string.
+def check_int(x):
+	try:
+		int(x)
+		return True
+	except ValueError:
+		return False
 # GET_DEFAULT()
 # Gets the currently set default boot option.
 def get_default():
@@ -57,12 +66,12 @@ def get_current():
 # options other than "list" require arguments.
 def list_menu(args = 0):
 	# Note: This is currentingly Work In Progress
-	# NOTE: You were also going to add a "current" line,
-	# 	But wanted to do it intelligently so "current" and "Default" didn't conflict
 	items = get_menu()
+	t = Terminal()
+	print "---------------"
 	print "Grub2 Boot Menu:"
-	print "Current Kernel: " + get_current()
-	print "Default Option: " + get_default()
+	print "Current Kernel: " + t.red(get_current())
+	print "Default Option: " + t.green(get_default())
 	print "---------------"
 	for line in items:
 		if items.index(line) < 10:
@@ -71,14 +80,10 @@ def list_menu(args = 0):
 			pad = 2
 			
 		if line == get_default():
-			t = Terminal()
-			x = "{" + str(items.index(line)) + "}".ljust(pad) + line
-			print t.green(x)
-			#print t.red(x)
-			#print t.red_on_white(x)
+			print t.green("{") + t.red(str(items.index(line))) + t.green("}".ljust(pad) + line)
 			
 		else:
-			print "[" + str(items.index(line)) + "]".ljust(pad) + line
+			print "[" + t.red(str(items.index(line))) + "]".ljust(pad) + line
 
 
 	print "---------------"
@@ -110,8 +115,36 @@ def create_menu(menu_in):
 		
 
 ############################
+# SET_DEFAULT():
+# This checks to see if the entry is a numerical value, or string, if numerical
+# it looks up the numerical entry based on the "get_menu" action, and uses
+# that entry as the choice. It then will try and set the default boot option.
+# it will then change the default boot option using grub2's "grub2-set-default" command
 def set_default(args):
-        print "hit set defaults " + args.string
+	x = args.string
+	t = Terminal()
+	if check_int(x):
+		tmp = get_menu()
+		#if (x <= (len(tmp) - 1)):
+		if (int(x) <= (len(tmp) - 1)):
+			choice = tmp[int(x)]
+		else:
+			print "[" + t.red("FAILURE") + "] Option Not Found" 
+			return
+
+	else:
+		choice = x
+	
+	if choice in get_menu():
+		call(['grub2-set-default', choice])
+		print "[" + t.green("SUCCESS") + "] " + t.green(choice) 
+			
+	else:
+		print "[" + t.red("FAILURE") + "] Option Not Found: " 
+		print t.red(choice) 
+		return
+	
+		
 
 # END FUNCTIONS
 
@@ -130,7 +163,7 @@ parser_list.set_defaults(func=list_menu)
 # SET-DEFAULT
 # Parser for the "set-default" option.
 parser_set_default = subparsers.add_parser('set-default', help='set default boot option')
-parser_set_default.add_argument('string')
+parser_set_default.add_argument('<boot selection>', help='This can be either the numerical value listed in "grub2adm list" or the full string value of the boot option.')
 parser_set_default.set_defaults(func=set_default)
 ###
 
