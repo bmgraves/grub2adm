@@ -4,6 +4,9 @@ When dealing with grub2 currently there are several different commands that must
 in the use of grub2 are not readily apparent. It is the intention of this program to allow users to manage their
 grub2 boot options in a simple and pain free way.
 
+# STATUS
+Current version is limited, but ready for use. Master version is currently the beta version, New features
+will be tested and developed on the alpha version, before being pushed up for usage tests.
 
 # Installation and usage
 With elevated privledges run the "install.sh" script, this will install all the necessary files.
