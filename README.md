@@ -18,16 +18,17 @@ grub2adm list - Lists all the currently known boot options.
 grub2adm set-default - This can be used with either a "string" value, or a numerical value as found in the "list" option.
 
 # Roadmap
-- (COMPLETE) Get working Argument parsing.                 
-- (COMPLETE) List available boot options in intelligent way.
-- (COMPLETE) Ability to set-default boot options
-- (PENDING)  Set grub2 Password
-- (PENDING)  List-boot Options
+- (COMPLETE)  Get working Argument parsing.                 
+- (COMPLETE)  List available boot options in intelligent way.
+- (COMPLETE)  Ability to set-default boot options
+- (PENDING)   Set grub2 Password
+- (PENDING)   List-boot Options
+- (PENDING)   Add "-f|--force" option to "set-default" to allow unknown kernel option to be set as default.
 
 
 # Tested on:
-- CentOS: 7
-
+- (COMPLETE)  CentOS: 7
+- (PENDING)   Ubuntu LTS
 
 
 
