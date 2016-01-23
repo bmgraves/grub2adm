@@ -23,6 +23,6 @@ grub2adm set-default - This can be used with either a "string" value, or a numer
 - (COMPLETE) Ability to set-default boot options
 - (PENDING)  Set grub2 Password
 - (PENDING)  List-boot Options
-
+- (PENDING)   Add "-f|--force" option to "set-default" to allow unknown kernel option to be set as default.
 
 
