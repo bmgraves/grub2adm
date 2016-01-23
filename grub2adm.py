@@ -37,17 +37,14 @@ VERSION = ".02"
 
 
 
-def print_error(x):
-	t = Terminal()
-	print '['+ t.red('FAILED') + '] ' + x 
 	
 # Functions go here
 #########################################
-def show_version():
-	print "grub2adm, VERSION: " + VERSION + ", http://metashell.net"
-	print "PROJECT: https://github.com/bmgraves/grub2adm"
-	print "AUTHOR: Brandon M. Graves"
-
+# PRINT_ERROR():
+# Has formatting options for error printing.
+def print_error(x):
+	t = Terminal()
+	print '['+ t.red('FAILED') + '] ' + x 
 # CHECK_INT():
 #  Simple check to see if something is an integer or string.
 def check_int(x):
