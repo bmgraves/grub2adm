@@ -30,5 +30,8 @@ grub2adm set-default - This can be used with either a "string" value, or a numer
 - (COMPLETE)  CentOS: 7
 - (PENDING)   Ubuntu LTS
 
+# Include
+The following projects are included in this project, big thanks to them for their contributions to the open source world,
+because without their projects this one would not work nearly as well!
 
-
+- Blessings 1.6 : Python Module: https://pypi.python.org/pypi/blessings/ (Copyright (c) 2011 Erik Rose)
