@@ -34,7 +34,7 @@ BOOT_PATH = "/boot/grub2/"
 OPTIONS = "/etc/default/grub"
 GRUB_CFG = BOOT_PATH + "/grub.cfg"
 GRUB_ENV = BOOT_PATH + "/grubenv"
-VERSION = ".04"
+VERSION = ".05"
 
 
 
@@ -65,6 +65,11 @@ def check_int(x):
 		return True
 	except ValueError:
 		return False
+# UPDATE():
+# This function applies any new changes to grub2.
+def update():
+	call(['grub2-mkconfig','-o',GRUB_CFG])
+
 # GET_DEFAULT()
 # Gets the currently set default boot option.
 def get_default():
@@ -213,6 +218,27 @@ def set_default(args):
 		
 	
 		
+def user_check(user):
+	print "User check Function: " + user
+
+def user_del(user):
+	print "User delete Function: " + user
+
+def user_add(user):
+	print "User add Function: " + user
+	
+def base_users(args = 0):
+	user = args.user
+	print "DEBUG: " + user
+	if (args.add):
+		user_add(user)
+	elif (args.delete):
+		user_del(user)
+	else:
+		user_check(user)
+	
+		
+
 
 # END FUNCTIONS
 
@@ -233,17 +259,41 @@ parser_list.set_defaults(func=list_menu)
 # SET-DEFAULT
 # Parser for the "set-default" option.
 parser_set_default = subparsers.add_parser('set-default', help='set default boot option')
-parser_set_default.add_argument('boot_selection', help='This can be either the numerical value listed in "grub2adm list" or the full string value of the boot option.')
+parser_set_default.add_argument('boot_selection',metavar='SELECTION', help='This can be either the numerical value listed in "grub2adm list" or the full string value of the boot option.')
 parser_set_default.set_defaults(func=set_default)
 ###
+
+# Users
+parser_users = subparsers.add_parser('users', help='Set Bootloader passwords, add/remove Users')
+parser_users.add_argument('user', help='The user to add/modify')
+
+group = parser_users.add_mutually_exclusive_group()
+group.add_argument('-a','--add', help='marks the user for creation',action='store_true',default=False)
+group.add_argument('-d','--delete', help='marks the user for removal',action='store_true',default=False)
+
+parser_users.add_argument('-p','--password',nargs=1, metavar='SECRET', help='Plaintext by default')
+parser_users.add_argument('-e','--encrypt',action='store_true', default=False, help='Encrypts password before setting')
+parser_users.set_defaults(func=base_users)
 
 # END PARSER CONFIG
 
 # Begin program:  This is some basic start program logic,
 # Likely nothing should go wrong below this line.
+
+
+# Check if there are any arguments, if not, print full usage
 if len(sys.argv)==1:
 	parser.print_usage()
 	sys.exit(1)
 
-args = parser.parse_args()
-args.func(args)
+# Begin Real work.
+try:
+	# Printing a newline before execution to help readability
+	print ''
+
+	args = parser.parse_args()
+	args.func(args)
+finally:
+	# End with a blankline to assist readability
+	print ''
+
