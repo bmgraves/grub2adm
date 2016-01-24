@@ -21,7 +21,7 @@ grub2adm set-default - This can be used with either a "string" value, or a numer
 - (COMPLETE)  Get working Argument parsing.                 
 - (COMPLETE)  List available boot options in intelligent way.
 - (COMPLETE)  Ability to set-default boot options
-- (COMPLETE)  (ALPHA Build) List-boot Options
+- (COMPLETE)  (BETA Build) List-boot Options
 - (PENDING)   Set Boot Options
 - (PENDING)   Set grub2 Password
 - (PENDING)   Set grub2 password for individual menu items
