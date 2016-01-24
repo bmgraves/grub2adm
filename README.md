@@ -4,6 +4,9 @@ When dealing with grub2 currently there are several different commands that must
 in the use of grub2 are not readily apparent. It is the intention of this program to allow users to manage their
 grub2 boot options in a simple and pain free way.
 
+NOTE: Latest Roadmap Will always be listed under the "alpha" branch. To check feature status, please look under that
+      readme.
+
 # STATUS
 Current version is limited, but ready for use. Master version is currently the beta version, New features
 will be tested and developed on the alpha version, before being pushed up for usage tests.
@@ -21,7 +24,7 @@ grub2adm set-default - This can be used with either a "string" value, or a numer
 - (COMPLETE)  Get working Argument parsing.                 
 - (COMPLETE)  List available boot options in intelligent way.
 - (COMPLETE)  Ability to set-default boot options
-- (COMPLETE)  (BETA Build) List-boot Options
+- (COMPLETE)  List-boot Options
 - (PENDING)   Set Boot Options
 - (PENDING)   Set grub2 Password
 - (PENDING)   Set grub2 password for individual menu items
