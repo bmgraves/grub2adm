@@ -34,7 +34,7 @@ BOOT_PATH = "/boot/grub2/"
 OPTIONS = "/etc/default/grub"
 GRUB_CFG = BOOT_PATH + "/grub.cfg"
 GRUB_ENV = BOOT_PATH + "/grubenv"
-VERSION = ".03"
+VERSION = ".04"
 
 
 
@@ -50,11 +50,13 @@ def dynamic_pad(x):
 		if (len(y) > pad):
 			pad = len(y)	
 	return pad
-# PRINT_ERROR():
+
+# EPRINT():
 # Has formatting options for error printing.
-def print_error(x):
+def eprint(x):
 	t = Terminal()
 	print '['+ t.red('FAILED') + '] ' + x 
+
 # CHECK_INT():
 #  Simple check to see if something is an integer or string.
 def check_int(x):
@@ -71,6 +73,8 @@ def get_default():
 		if x.match(line):
 			return line.split('=')[1].rstrip('\n')
 
+# GET_CURRENT():
+# This just gets the current kernel from uname -r
 def get_current():
 	return platform.release()	
 	
@@ -86,9 +90,9 @@ def get_boot_options():
 			x[line.split('=',1)[0]] = line.split('=',1)[1].rstrip('\n')
 		return x
 	except IOError:
-		print_error('Permission Denied')
+		eprint('Permission Denied')
 	except:
-		print_error('Unknown error in: get_boot options')
+		eprint('Unknown error in: get_boot options')
 
 # LIST_BOOT_OPTIONS():
 # Takes the dictionary provided by "GET_BOOT_OPTIONS()" and prints it in a readable format
@@ -102,7 +106,7 @@ def list_boot_options():
 		for y in x.keys():
 			print y.ljust(pad) + ': ' + t.green(x[y])
 	except:
-		print_error('Unknown error in: list_boot_options()')
+		eprint('Unknown error in: list_boot_options()')
 
 # LIST_MENU(): 
 #  This function is intended to get a list of all bootable kernels currently known by grub2
@@ -139,9 +143,9 @@ def list_menu(args = 0):
 			
 
 	except IOError:
-		print_error('You need to be root to perform this action.')
+		eprint('You need to be root to perform this action.')
 	except:
-		print_error("Unknown Error")
+		eprint("Unknown Error")
 
 
 # GET_MENU():
@@ -198,14 +202,14 @@ def set_default(args):
 			print "[" + t.green("SUCCESS") + "] " + t.green(choice) 
 				
 		else:
-			print_error('Option Not Found: ') 
+			eprint('Option Not Found: ') 
 			print t.red(choice) 
 			return
 	except IOError:
-		print_error("You Must be root to perform this action")
+		eprint("You Must be root to perform this action")
 	except:
 	
-		print_error("Unknown Error")
+		eprint("Unknown Error")
 		
 	
 		
@@ -216,7 +220,7 @@ def set_default(args):
 # This is the basic Parser config area.
 parser = argparse.ArgumentParser(description='A better way to Grub2')
 parser.add_argument('-v','--version', help='Display Version information', action='version', version='%(prog)s VERSION: ' + str(VERSION))
-subparsers = parser.add_subparsers(title='Available Commands')
+subparsers = parser.add_subparsers(title='Available Commands', help='Additional Help available with -h, --help for each option')
 ###
 
 # LIST:
