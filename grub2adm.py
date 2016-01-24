@@ -31,15 +31,25 @@ from subprocess import call
 ###########
 # Location of your grub2 files
 BOOT_PATH = "/boot/grub2/"
+OPTIONS = "/etc/default/grub"
 GRUB_CFG = BOOT_PATH + "/grub.cfg"
 GRUB_ENV = BOOT_PATH + "/grubenv"
-VERSION = ".02"
+VERSION = ".03"
 
 
 
 	
 # Functions go here
 #########################################
+# DYNAMIC_JUSTIFY():
+# This is just to do some dynamic checking to make sure the padding of certain printed aspects is adjusted based on
+# The max length of an item
+def dynamic_pad(x):
+	pad = 0
+	for y in x:
+		if (len(y) > pad):
+			pad = len(y)	
+	return pad
 # PRINT_ERROR():
 # Has formatting options for error printing.
 def print_error(x):
@@ -65,6 +75,34 @@ def get_current():
 	return platform.release()	
 	
 
+
+# GET_BOOT_OPTIONS():
+#  This function opens up the "OPTIONS" config file, and loads it up into a dictionary for later use
+# Then returns that list up to the calling function. 
+def get_boot_options():
+	x = {} 
+	try:
+		for line in open(OPTIONS):
+			x[line.split('=',1)[0]] = line.split('=',1)[1].rstrip('\n')
+		return x
+	except IOError:
+		print_error('Permission Denied')
+	except:
+		print_error('Unknown error in: get_boot options')
+
+# LIST_BOOT_OPTIONS():
+# Takes the dictionary provided by "GET_BOOT_OPTIONS()" and prints it in a readable format
+# We use dynamic pad to get the longest key in the string, and justify all the options based on that
+def list_boot_options():
+	t = Terminal()
+	try:
+		x = get_boot_options()
+		print "Boot Options from: " + OPTIONS
+		pad = dynamic_pad(x.keys())
+		for y in x.keys():
+			print y.ljust(pad) + ': ' + t.green(x[y])
+	except:
+		print_error('Unknown error in: list_boot_options()')
 
 # LIST_MENU(): 
 #  This function is intended to get a list of all bootable kernels currently known by grub2
@@ -96,6 +134,10 @@ def list_menu(args = 0):
 
 
 		print "---------------"
+		if (args.options):
+			list_boot_options()
+			
+
 	except IOError:
 		print_error('You need to be root to perform this action.')
 	except:
@@ -180,6 +222,7 @@ subparsers = parser.add_subparsers(title='Available Commands')
 # LIST:
 # Parser for the "list" option
 parser_list = subparsers.add_parser('list', help='list available boot options')
+parser_list.add_argument('-o','--options', help='Print out Kernel boot options.',action='store_true',default=False)
 parser_list.set_defaults(func=list_menu)
 ###
 
