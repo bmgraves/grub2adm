@@ -21,14 +21,21 @@ grub2adm set-default - This can be used with either a "string" value, or a numer
 - (COMPLETE)  Get working Argument parsing.                 
 - (COMPLETE)  List available boot options in intelligent way.
 - (COMPLETE)  Ability to set-default boot options
+- (COMPLETE)  (ALPHA Build) List-boot Options
+- (PENDING)   Set Boot Options
 - (PENDING)   Set grub2 Password
-- (PENDING)   List-boot Options
+- (PENDING)   Set grub2 password for individual menu items
+- (PENDING)   Manage grub2 users
 - (PENDING)   Add "-f|--force" option to "set-default" to allow unknown kernel option to be set as default.
+- (PENDING)   Create "add" function for adding custom menu entries.
 
 
 # Tested on:
 - (COMPLETE)  CentOS: 7
-- (PENDING)   Ubuntu LTS
+- (PENDING)   Ubuntu <Any Version>
 
+# Include
+The following projects are included in this project, big thanks to them for their contributions to the open source world,
+because without their projects this one would not work nearly as well!
 
-
+- Blessings 1.6 : Python Module: https://pypi.python.org/pypi/blessings/ (Copyright (c) 2011 Erik Rose)
