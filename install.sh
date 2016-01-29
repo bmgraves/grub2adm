@@ -35,3 +35,4 @@ echo "---------"
 echo "Installing $NAME to: $INST_PATH/$NAME"
 echo "---------"
 cp $BASE_PY $INST_PATH/$NAME
+chown root $INST_PATH/$NAME
