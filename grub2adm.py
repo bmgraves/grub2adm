@@ -221,6 +221,9 @@ def set_default(args):
 def user_check(user):
 	print "User check Function: " + user
 
+def user_list():
+	print "User List Function"
+
 def user_del(user):
 	print "User delete Function: " + user
 
@@ -228,14 +231,20 @@ def user_add(user):
 	print "User add Function: " + user
 	
 def base_users(args = 0):
-	user = args.user
-	print "DEBUG: " + user
-	if (args.add):
-		user_add(user)
-	elif (args.delete):
-		user_del(user)
+	if args.user is None:
+		if args.list:
+			user_list()
 	else:
-		user_check(user)
+		user = args.user
+		print args.user 
+		if (args.add):
+			user_add(user)
+		elif (args.delete):
+			user_del(user)
+		elif (args.list):
+			user_list()
+		else:
+			user_check(user)
 	
 		
 
@@ -265,11 +274,12 @@ parser_set_default.set_defaults(func=set_default)
 
 # Users
 parser_users = subparsers.add_parser('users', help='Set Bootloader passwords, add/remove Users')
-parser_users.add_argument('user', help='The user to add/modify')
+parser_users.add_argument('user', metavar='USER', nargs='?', const=0, help='The user to add/modify')
 
 group = parser_users.add_mutually_exclusive_group()
-group.add_argument('-a','--add', help='marks the user for creation',action='store_true',default=False)
+group.add_argument('-a','--add', help='marks the user for creation', action='store_true', default=False)
 group.add_argument('-d','--delete', help='marks the user for removal',action='store_true',default=False)
+group.add_argument('-l','--list', help='List GRUB2 users',action='store_true',default=False)
 
 parser_users.add_argument('-p','--password',nargs=1, metavar='SECRET', help='Plaintext by default')
 parser_users.add_argument('-e','--encrypt',action='store_true', default=False, help='Encrypts password before setting')
@@ -289,7 +299,6 @@ if len(sys.argv)==1:
 # Begin Real work.
 try:
 	# Printing a newline before execution to help readability
-	print ''
 
 	args = parser.parse_args()
 	args.func(args)
