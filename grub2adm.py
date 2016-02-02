@@ -34,7 +34,7 @@ BOOT_PATH = "/boot/grub2/"
 OPTIONS = "/etc/default/grub"
 GRUB_CFG = BOOT_PATH + "/grub.cfg"
 GRUB_ENV = BOOT_PATH + "/grubenv"
-VERSION = ".05"
+VERSION = ".06"
 
 
 
@@ -125,7 +125,7 @@ def list_menu(args = 0):
 	try:
 		items = get_menu()
 		print "---------------"
-		print "Grub2 Boot Menu:"
+		print "Grub2 Boot Menu"
 		print "Current Kernel: " + t.red(get_current())
 		print "Default Option: " + t.green(get_default())
 		print "---------------"
@@ -218,33 +218,41 @@ def set_default(args):
 		
 	
 		
-def user_check(user):
+def user_check(args):
+
 	print "User check Function: " + user
 
-def user_list():
-	print "User List Function"
+def user_list(args = 0):
+	if (args.user is None):
+		print "User List Function"
+	else:
+		user = args.user[0]
+		print "List: " + user
 
-def user_del(user):
+def user_del(args):
+	user = args.user[0]
 	print "User delete Function: " + user
 
-def user_add(user):
+def user_add(args):
+	user = args.user[0]
 	print "User add Function: " + user
 	
-def base_users(args = 0):
-	if args.user is None:
-		if args.list:
-			user_list()
-	else:
-		user = args.user
-		print args.user 
-		if (args.add):
-			user_add(user)
-		elif (args.delete):
-			user_del(user)
-		elif (args.list):
-			user_list()
-		else:
-			user_check(user)
+# Old development path, no longer in use.
+#def base_users(args = 0):
+#	if args.user is None:
+#		if args.list:
+#			user_list()
+#	else:
+#		user = args.user
+#		print args.user 
+#		if (args.add):
+#			user_add(user)
+#		elif (args.delete):
+#			user_del(user)
+#		elif (args.list):
+#			user_list()
+#		else:
+#			user_check(user)
 	
 		
 
@@ -268,23 +276,46 @@ parser_list.set_defaults(func=list_menu)
 # SET-DEFAULT
 # Parser for the "set-default" option.
 parser_set_default = subparsers.add_parser('set-default', help='set default boot option')
-parser_set_default.add_argument('boot_selection',metavar='SELECTION', help='This can be either the numerical value listed in "grub2adm list" or the full string value of the boot option.')
+parser_set_default.add_argument('boot_selection', metavar='SELECTION', help='This can be either the numerical value listed in "grub2adm list" or the full string value of the boot option.')
 parser_set_default.set_defaults(func=set_default)
 ###
 
 # Users
-# NOTE: You want to redo this as full sub commands.
-parser_users = subparsers.add_parser('users', help='Set Bootloader passwords, add/remove Users')
-parser_users.add_argument('user', metavar='USER', nargs='?', const=0, help='The user to add/modify')
+# Add the main user parser
+parser_user = subparsers.add_parser('user', help='Set Bootloader passwords, add/remove Users')
+subparsers_user = parser_user.add_subparsers(title='Available Commands', help='Additional Help available with -h, --help for each option')
 
-group = parser_users.add_mutually_exclusive_group()
-group.add_argument('-a','--add', help='marks the user for creation', action='store_true', default=False)
-group.add_argument('-d','--delete', help='marks the user for removal',action='store_true',default=False)
-group.add_argument('-l','--list', help='List GRUB2 users',action='store_true',default=False)
+# Sub parser settings for  grub2adm user add
+parser_useradd = subparsers_user.add_parser('add', help='add new user to grub2 user list')
+parser_useradd.add_argument('user', nargs=1, metavar='<USER>', help='username to add')
+parser_useradd.add_argument('-p', '--password', help='Will prompt for users password', action='store_true', default=False)
+parser_useradd.add_argument('-s', '--superuser', help='designates new user as grub2 superuser', action='store_true', default=False)
+parser_useradd.set_defaults(func=user_add)
 
-parser_users.add_argument('-p','--password',nargs=1, metavar='SECRET', help='Plaintext by default')
-parser_users.add_argument('-e','--encrypt',action='store_true', default=False, help='Encrypts password before setting')
-parser_users.set_defaults(func=base_users)
+
+# SUb Parser settings for grub2adm user delete
+parser_userdel = subparsers_user.add_parser('delete', help='delete user from grub2 user list')
+parser_userdel.add_argument('user', nargs=1, metavar='<USER>', help='username to delete')
+parser_userdel.set_defaults(func=user_del)
+
+
+# Sub Parser settings for grub2adm user list
+parser_userlist = subparsers_user.add_parser('list', help='list grub2 users')
+# Not sold on -u/--user as an option, May need to break it off as its own subcommand, but not sure how usefull it would be
+# Vs how much clutter it would cause.
+parser_userlist.add_argument('-u', '--user', nargs=1, metavar='<USER>', help='Check a specific user\'s information')
+parser_userlist.set_defaults(func=user_list)
+
+# Previous design path, now abandoned
+#parser_users.add_argument('user', metavar='USER', nargs='?', const=0, help='The user to add/modify')
+#group = parser_users.add_mutually_exclusive_group()
+#group.add_argument('-a','--add', help='marks the user for creation', action='store_true', default=False)
+#group.add_argument('-d','--delete', help='marks the user for removal',action='store_true',default=False)
+#group.add_argument('-l','--list', help='List GRUB2 users',action='store_true',default=False)
+#
+#parser_users.add_argument('-p','--password',nargs=1, metavar='SECRET', help='Plaintext by default')
+#parser_users.add_argument('-e','--encrypt',action='store_true', default=False, help='Encrypts password before setting')
+#parser_users.set_defaults(func=base_users)
 
 # END PARSER CONFIG
 
@@ -299,8 +330,6 @@ if len(sys.argv)==1:
 
 # Begin Real work.
 try:
-	# Printing a newline before execution to help readability
-
 	args = parser.parse_args()
 	args.func(args)
 finally:
