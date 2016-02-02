@@ -273,6 +273,7 @@ parser_set_default.set_defaults(func=set_default)
 ###
 
 # Users
+# NOTE: You want to redo this as full sub commands.
 parser_users = subparsers.add_parser('users', help='Set Bootloader passwords, add/remove Users')
 parser_users.add_argument('user', metavar='USER', nargs='?', const=0, help='The user to add/modify')
 
