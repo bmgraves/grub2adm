@@ -25,16 +25,20 @@ import argparse
 import re
 import sys
 import platform
+import os
 from blessings import Terminal
 from subprocess import call
 # CONFIG:
 ###########
 # Location of your grub2 files
-BOOT_PATH = "/boot/grub2/"
+NAME = os.path.basename(__file__)
+BOOT_PATH = "/boot/grub2"
 OPTIONS = "/etc/default/grub"
 GRUB_CFG = BOOT_PATH + "/grub.cfg"
 GRUB_ENV = BOOT_PATH + "/grubenv"
-VERSION = ".06"
+GRUB_D = "/etc/grub.d"
+GRUB_USERS = GRUB_D + "/01_users"
+VERSION = ".07"
 
 
 
@@ -218,16 +222,42 @@ def set_default(args):
 		
 	
 		
+def user_format(args = 0):
+	t = Terminal()
+	print t.yellow("Are you sure you want to format ") + t.green(GRUB_USERS) + "? [y/N]"
+
+	
+	
+# Check the formatting of the users file to make sure it is in the correct format for use
+# This is to prevent different OS's formatting standards from effecting the performance of the tool.
+def user_check_format(args = 0):
+	search = []
+	search.append(re.compile('#GRUB2ADM-Controlled'))
+	t = Terminal()
+	managed = False
+	for line in open(GRUB_USERS):
+		if any(x.match(line) for x in search):
+			managed = True
+	if (managed):
+		print "hit it"
+		return True
+	else:
+		print t.yellow("Warning: ") + t.green(GRUB_USERS) + " is not formatted correctly for use with this tool. "
+		print "Please backup current config file: " + t.green(GRUB_USERS) + " and run " + t.green(NAME + " user format")
+		return False
+
+
 def user_check(args):
 
 	print "User check Function: " + user
 
 def user_list(args = 0):
-	if (args.user is None):
-		print "User List Function"
-	else:
-		user = args.user[0]
-		print "List: " + user
+	if (user_check_format()):
+		if (args.user is None):
+		 	print "User List Function"
+		else:
+			user = args.user[0]
+			print "List: " + user
 
 def user_del(args):
 	user = args.user[0]
@@ -305,6 +335,12 @@ parser_userlist = subparsers_user.add_parser('list', help='list grub2 users')
 # Vs how much clutter it would cause.
 parser_userlist.add_argument('-u', '--user', nargs=1, metavar='<USER>', help='Check a specific user\'s information')
 parser_userlist.set_defaults(func=user_list)
+
+
+# Sub Parser settings for grub2adm user format:
+parser_userformat = subparsers_user.add_parser('format', help='Format grub2 users file')
+parser_userformat.set_defaults(func=user_format)
+
 
 # Previous design path, now abandoned
 #parser_users.add_argument('user', metavar='USER', nargs='?', const=0, help='The user to add/modify')
