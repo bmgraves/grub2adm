@@ -235,29 +235,113 @@ def user_check_format(args = 0):
 	search.append(re.compile('#GRUB2ADM-Controlled'))
 	t = Terminal()
 	managed = False
-	for line in open(GRUB_USERS):
-		if any(x.match(line) for x in search):
-			managed = True
-	if (managed):
-		print "hit it"
-		return True
+	if (os.path.isfile(GRUB_USERS)):
+		for line in open(GRUB_USERS):
+			if any(x.match(line) for x in search):
+				managed = True
+		if (managed):
+			return True
+		else:
+			print t.yellow("Warning: ") + t.green(GRUB_USERS) + " is not formatted correctly for use with this tool. "
+			print t.yellow("Warning: ") + " Please run the install.sh script to install the proper user file template." 
+			return False
 	else:
-		print t.yellow("Warning: ") + t.green(GRUB_USERS) + " is not formatted correctly for use with this tool. "
-		print t.yellow("Warning: ") + " Please run the install.sh script to install the proper user file template." 
+		print t.yellow("Warning: ") + t.green(GRUB_USERS) + " Not found. Running the install.sh script will install a template for this file."
 		return False
 
 
-def user_check(args):
+def check_u_encrypt(x):
+	encrypted = []
+	encrypted.append(re.compile('password_pbkdf2'))
+	unencrypted = re.compile('password')
+	if any (y.match(x) for y in encrypted):
+		return True
+	elif unencrypted.match(x):
+		return False
+	else:
+		eprint("The user is not following normal password formatting")
+	
 
-	print "User check Function: " + user
+def check_u_admin(user):
+	admin = re.compile('set superusers')
+	status = False
+	for line in open(GRUB_USERS):
+		if admin.match(line):
+			users = line.split('=',2)
+			for u in users[1].split(' '):
+				if u == user:
+					status = True
+	return status		
+
+
+def build_user(RAW_USER):
+	tmp_user = RAW_USER.split(' ')
+	user_name = tmp_user[1]
+	INFO = {}
+#	INFO['']
+	INFO['encrypted'] = check_u_encrypt(tmp_user[0])
+	INFO['admin'] = check_u_admin(user_name)
+	INFO['password'] = tmp_user[2]
+
+	return {user_name : INFO}
+
+# pulls a list of users from the GRUB_USERS file, looking for both encrypted and un-encrypted entries.
+def get_users(u = 0):
+	users = {}
+	usersearch = []
+	usersearch.append(re.compile('password'))
+	usersearch.append(re.compile('password_pbkdf2'))
+#	adminsearch.append(re.compile('set superusers')
+	
+	for line in open(GRUB_USERS):
+		if any(x.match(line) for x in usersearch):
+			if u == 0:
+				tmp = build_user(line)
+				users.update(tmp)
+			elif (line.split(' ')[1] == u):
+				tmp = build_user(line)
+				users.update(tmp)
+
+	return users
+		
+		
+
+def print_format(name, admin, encrypted, password = ""):
+	t = Terminal()
+	print name + " " + str(admin) + " " + str(encrypted) + " " + password 
+
+
+def user_print(users, show_pass):
+	t = Terminal()
+	print "-"
+	for key in users:
+		INFO = users[key]
+		NAME = key
+		ADMIN = INFO['admin']
+		ENCRYPTED = INFO['encrypted']
+		if ENCRYPTED:
+			PASSWORD = "**ENCRYPTED**"
+		else:
+			PASSWORD = INFO['password']
+
+		if (show_pass):
+			print_format(NAME, ADMIN, ENCRYPTED, PASSWORD)
+		else:
+			print_format(NAME, ADMIN, ENCRYPTED)
+			
+
+		
+
 
 def user_list(args = 0):
 	if (user_check_format()):
+
 		if (args.user is None):
-		 	print "User List Function"
+			users = get_users()
 		else:
 			user = args.user[0]
-			print "List: " + user
+			users = get_users(user)
+		user_print(users, args.password)
 
 def user_del(args):
 	user = args.user[0]
@@ -323,7 +407,7 @@ parser_useradd.add_argument('-s', '--superuser', help='designates new user as gr
 parser_useradd.set_defaults(func=user_add)
 
 
-# SUb Parser settings for grub2adm user delete
+# SUb ings for grub2adm user delete
 parser_userdel = subparsers_user.add_parser('delete', help='delete user from grub2 user list')
 parser_userdel.add_argument('user', nargs=1, metavar='<USER>', help='username to delete')
 parser_userdel.set_defaults(func=user_del)
@@ -334,6 +418,7 @@ parser_userlist = subparsers_user.add_parser('list', help='list grub2 users')
 # Not sold on -u/--user as an option, May need to break it off as its own subcommand, but not sure how usefull it would be
 # Vs how much clutter it would cause.
 parser_userlist.add_argument('-u', '--user', nargs=1, metavar='<USER>', help='Check a specific user\'s information')
+parser_userlist.add_argument('-p', '--password',action='store_true', default=False, help='Show Users currently set password(if unencrypted)')
 parser_userlist.set_defaults(func=user_list)
 
 
