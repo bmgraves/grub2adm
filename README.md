@@ -26,6 +26,7 @@ grub2adm set-default - This can be used with either a "string" value, or a numer
 - (COMPLETE)  Ability to set-default boot options
 - (COMPLETE)  List-boot Options
 - (IN-PROG)   Manage grub2 users
+- (IN-PROG)   List grub2 users
 - (IN-PROG)   Set grub2 Password
 - (PENDING)   Set Boot Options
 - (PENDING)   Set grub2 password for individual menu items
