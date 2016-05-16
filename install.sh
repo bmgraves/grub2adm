@@ -45,10 +45,12 @@ echo "COMPLETE"
 echo "---------"
 echo "Backing up old config file: $USERS"
 echo "---------"
-mv $USERS $BASE_DIR/01_users.bak-$DATE
+mkdir $BASE_DIR/backups
+mv $USERS $BASE_DIR/backups/01_users.bak-$DATE
+echo "COMPLETE"
 
 echo "---------"
 echo "Copying Users template to: $USERS"
 echo "---------"
-cp -b $CONFIG_DIR/$USER_TEMP $USERS
+cp $CONFIG_DIR/$USER_TEMP $USERS
 echo "COMPLETE"
