@@ -6,6 +6,9 @@ BLESS_DIR="blessings-1.6"
 NAME="grub2adm"
 BASE_PY="$NAME.py"
 INST_PATH="/usr/sbin"
+USERS="/etc/grub.d/01_users"
+USER_TEMP="users.template"
+DATE=$( date +'%Y%m%d' )
 
 
 # check privledges
@@ -36,3 +39,16 @@ echo "Installing $NAME to: $INST_PATH/$NAME"
 echo "---------"
 cp $BASE_PY $INST_PATH/$NAME
 chown root $INST_PATH/$NAME
+
+echo "COMPLETE"
+
+echo "---------"
+echo "Backing up old config file: $USERS"
+echo "---------"
+mv $USERS $BASE_DIR/01_users.bak-$DATE
+
+echo "---------"
+echo "Copying Users template to: $USERS"
+echo "---------"
+cp -b $CONFIG_DIR/$USER_TEMP $USERS
+echo "COMPLETE"

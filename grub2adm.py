@@ -243,7 +243,7 @@ def user_check_format(args = 0):
 		return True
 	else:
 		print t.yellow("Warning: ") + t.green(GRUB_USERS) + " is not formatted correctly for use with this tool. "
-		print "Please backup current config file: " + t.green(GRUB_USERS) + " and run " + t.green(NAME + " user format")
+		print t.yellow("Warning: ") + " Please run the install.sh script to install the proper user file template." 
 		return False
 
 

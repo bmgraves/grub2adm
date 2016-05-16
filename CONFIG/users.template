@@ -1,0 +1,5 @@
+#!/bin/sh -e
+#GRUB2ADM-Controlled
+cat << EOF
+set superusers="root"
+EOF
