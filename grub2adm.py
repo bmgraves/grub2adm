@@ -316,8 +316,13 @@ def get_users(u = 0):
 		
 		
 
+# NOTE: 25 total length?
 def print_format(name, admin, encrypted, password = ""):
 	t = Terminal()
+	name_pad = 10
+	pass_pad = 15
+
+	print "---------
 	print name + " " + str(admin) + " " + str(encrypted) + " " + password 
 
 
