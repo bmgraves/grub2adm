@@ -6,9 +6,9 @@
 #############################################################################
 # COPYRIGHT (C) 2016, Brandon M. Graves, http://metashell.net
 #
-# This program is free software: you can redistribute it and/or modify
+#    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 2 of the License, or
+#    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
 #
 #    This program is distributed in the hope that it will be useful,
@@ -38,7 +38,7 @@ GRUB_CFG = BOOT_PATH + "/grub.cfg"
 GRUB_ENV = BOOT_PATH + "/grubenv"
 GRUB_D = "/etc/grub.d"
 GRUB_USERS = GRUB_D + "/01_users"
-VERSION = ".07"
+VERSION = ".08"
 
 
 
@@ -222,9 +222,10 @@ def set_default(args):
 		
 	
 		
-def user_format(args = 0):
-	t = Terminal()
-	print t.yellow("Are you sure you want to format ") + t.green(GRUB_USERS) + "? [y/N]"
+# Old design path. Remove from final code.
+#def user_format(args = 0):
+#	t = Terminal()
+#	print t.yellow("Are you sure you want to format ") + t.green(GRUB_USERS) + "? [y/N]"
 
 	
 	
@@ -250,6 +251,8 @@ def user_check_format(args = 0):
 		return False
 
 
+# Checks to see if the users password is stored in plaintext or encrypted format.
+# Returns True or False
 def check_u_encrypt(x):
 	encrypted = []
 	encrypted.append(re.compile('password_pbkdf2'))
@@ -262,6 +265,7 @@ def check_u_encrypt(x):
 		eprint("The user is not following normal password formatting")
 	
 
+# this is performed to see if the user is an admin user, Returns True or False
 def check_u_admin(user):
 	admin = re.compile('set superusers')
 	status = False
@@ -277,6 +281,9 @@ def check_u_admin(user):
 	return status		
 
 
+# Takes a raw user line from the 01_users grub config file, and 
+# Formats it together into a dictionary with a username as the key, and a second
+# dictionary as the value, second object contains users information.
 def build_user(RAW_USER):
 	tmp_user = RAW_USER.split(' ')
 	user_name = tmp_user[1]

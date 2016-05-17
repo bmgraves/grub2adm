@@ -15,18 +15,21 @@ will be tested and developed on the alpha version, before being pushed up for us
 With elevated privledges run the "install.sh" script, this will install all the necessary files.
 the default install location for the command is "/usr/sbin" this is changable within the install.sh script.
 
-Currently there are two working features that can be used:
+Currently there are a few working features that can be used:
 
 grub2adm list - Lists all the currently known boot options.
 grub2adm set-default - This can be used with either a "string" value, or a numerical value as found in the "list" option.
+grub2adm user list - Lists all the users in the config files.
+
 
 # Roadmap
 - (COMPLETE)  Get working Argument parsing.                 
 - (COMPLETE)  List available boot options in intelligent way.
 - (COMPLETE)  Ability to set-default boot options
 - (COMPLETE)  List-boot Options
+- (COMPLETE)  List grub2 users
+- (IN-PROG)   Finalize formatting options for user listings 
 - (IN-PROG)   Manage grub2 users
-- (IN-PROG)   List grub2 users
 - (IN-PROG)   Set grub2 Password
 - (PENDING)   Set Boot Options
 - (PENDING)   Set grub2 password for individual menu items
@@ -35,7 +38,7 @@ grub2adm set-default - This can be used with either a "string" value, or a numer
 
 
 # Tested on:
-- (COMPLETE)  CentOS: 7
+- (IN-PROG)  CentOS: 7
 - (PENDING)   Ubuntu <Any Version>
 
 # Include
