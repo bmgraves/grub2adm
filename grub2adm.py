@@ -267,8 +267,11 @@ def check_u_admin(user):
 	status = False
 	for line in open(GRUB_USERS):
 		if admin.match(line):
-			users = line.split('=',2)
-			for u in users[1].split(' '):
+			user_line = line.split('=',2)
+			users = user_line[1]
+			users = users.strip('\n')
+			users = users.strip('"')
+			for u in users.split(' '):
 				if u == user:
 					status = True
 	return status		
@@ -291,16 +294,16 @@ def get_users(u = 0):
 	usersearch = []
 	usersearch.append(re.compile('password'))
 	usersearch.append(re.compile('password_pbkdf2'))
-#	adminsearch.append(re.compile('set superusers')
-	
+
 	for line in open(GRUB_USERS):
 		if any(x.match(line) for x in usersearch):
 			if u == 0:
 				tmp = build_user(line)
 				users.update(tmp)
-			elif (line.split(' ')[1] == u):
-				tmp = build_user(line)
-				users.update(tmp)
+			else: 
+				for x in (line.split(' ')):
+					tmp = build_user(line)
+					users.update(tmp)
 
 	return users
 		
