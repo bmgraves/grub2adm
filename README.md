@@ -46,3 +46,4 @@ The following projects are included in this project, big thanks to them for thei
 because without their projects this one would not work nearly as well!
 
 - Blessings 1.6 : Python Module: https://pypi.python.org/pypi/blessings/ (Copyright (c) 2011 Erik Rose)
+- Passlib 1.6.5: Python Module: https://pypi.python.org/pypi/passlib (Copyright (c) Eli Collins)
