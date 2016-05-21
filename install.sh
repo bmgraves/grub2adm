@@ -3,6 +3,7 @@
 CONFIG_DIR="CONFIG"
 BASE_DIR=`pwd`
 BLESS_DIR="blessings-1.6"
+PASSLIB_DIR="passlib-1.6.5"
 NAME="grub2adm"
 BASE_PY="$NAME.py"
 INST_PATH="/usr/sbin"
@@ -21,11 +22,17 @@ fi
 cd $CONFIG_DIR
 
 # Install Blessings
-cd $BLESS_DIR
 echo "---------"
 echo "Installing required python modules:"
 echo "---------"
 
+# install blessings
+cd $BLESS_DIR
+python setup.py install
+
+# Install bcrypt
+cd ..
+cd $PASSLIB_DIR
 python setup.py install
 
 # Return to config

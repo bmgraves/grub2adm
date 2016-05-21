@@ -27,7 +27,8 @@ import sys
 import platform
 import os
 #import bcrypt
-#from getpass import getpass
+from getpass import getpass
+from passlib.hash import grub_pbkdf2_sha512
 from blessings import Terminal
 from subprocess import call
 
@@ -41,7 +42,7 @@ GRUB_CFG = BOOT_PATH + "/grub.cfg"
 GRUB_ENV = BOOT_PATH + "/grubenv"
 GRUB_D = "/etc/grub.d"
 GRUB_USERS = GRUB_D + "/01_users"
-VERSION = ".08"
+VERSION = ".09"
 
 
 
@@ -365,16 +366,36 @@ def user_del(args):
 	user = args.user[0]
 	print "User delete Function: " + user
 
-def make_password():
-	return call(['grub2-mkpasswd-pbkdf2', getpass.getpass()])
+def make_password(unencrypted):
+	loop = True
+	passwd = ""
+	while loop:
+		passwd = getpass(prompt="Enter Password: ")
+		passwd_con = getpass(prompt="Reenter password: ")
+		if passwd == passwd_con:
+			break
+		else:
+			print "Passwords did not match, Please try again!\n"
+	print passwd
+	if (unencrypted):
+		return passwd
+	else:
+		return grub_pbkdf2_sha512.encrypt(passwd)
+		#return call(['grub2-mkpasswd-pbkdf2'])
 	
 	
 
 # This will make a raw user variable, then submit it to build_user, and then resubmit users to
 # Base file.
 def user_add(args):
-	raw_user = ['password_pbkdf2', args.user[0], make_password()]
-	print build_user(raw_user)
+	password_type = ''
+	if (args.unencrypted):
+		password_type = 'password'
+	else:
+		password_type = 'password_pbkdf2'
+	raw_user = [password_type, args.user[0], make_password(args.unencrypted)]
+	#print raw_user
+	print build_user(" ".join(raw_user))
 
 	
 	
@@ -431,6 +452,7 @@ parser_useradd = subparsers_user.add_parser('add', help='add new user to grub2 u
 parser_useradd.add_argument('user', nargs=1, metavar='<USER>', help='username to add')
 parser_useradd.add_argument('-p', '--password', help='Will prompt for users password', action='store_true', default=False)
 parser_useradd.add_argument('-s', '--superuser', help='designates new user as grub2 superuser', action='store_true', default=False)
+parser_useradd.add_argument('-u', '--unencrypted', help='store password unencrypted', action='store_true', default=False)
 parser_useradd.set_defaults(func=user_add)
 
 
