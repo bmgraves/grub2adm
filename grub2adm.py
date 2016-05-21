@@ -26,8 +26,11 @@ import re
 import sys
 import platform
 import os
+#import bcrypt
+#from getpass import getpass
 from blessings import Terminal
 from subprocess import call
+
 # CONFIG:
 ###########
 # Location of your grub2 files
@@ -322,7 +325,7 @@ def print_format(name, admin, encrypted, password = ""):
 	name_pad = 10
 	pass_pad = 15
 
-	print "---------
+	print "---------"
 	print name + " " + str(admin) + " " + str(encrypted) + " " + password 
 
 
@@ -362,9 +365,18 @@ def user_del(args):
 	user = args.user[0]
 	print "User delete Function: " + user
 
+def make_password():
+	return call(['grub2-mkpasswd-pbkdf2', getpass.getpass()])
+	
+	
+
+# This will make a raw user variable, then submit it to build_user, and then resubmit users to
+# Base file.
 def user_add(args):
-	user = args.user[0]
-	print "User add Function: " + user
+	raw_user = ['password_pbkdf2', args.user[0], make_password()]
+	print build_user(raw_user)
+
+	
 	
 # Old development path, no longer in use.
 #def base_users(args = 0):
@@ -437,9 +449,10 @@ parser_userlist.add_argument('-p', '--password',action='store_true', default=Fal
 parser_userlist.set_defaults(func=user_list)
 
 
+# OLD PATH -- Delete before release
 # Sub Parser settings for grub2adm user format:
-parser_userformat = subparsers_user.add_parser('format', help='Format grub2 users file')
-parser_userformat.set_defaults(func=user_format)
+#parser_userformat = subparsers_user.add_parser('format', help='Format grub2 users file')
+#parser_userformat.set_defaults(func=user_format)
 
 
 # Previous design path, now abandoned
