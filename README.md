@@ -1,7 +1,7 @@
 # Description
 grub2adm is intended to be a single script that simplifies and streamlines the usage and administration of grub2.
 When dealing with grub2 currently there are several different commands that must be used, and a few things involved
-in the use of grub2 are not readily apparent. It is the intention of this program to allow users to manage their
+in the use of grub2 are not readily apparent. It is the intention of this project to allow users to manage their
 grub2 boot options in a simple and pain free way.
 
 NOTE: Latest Roadmap Will always be listed under the "alpha" branch. To check feature status, please look under that
@@ -27,10 +27,10 @@ grub2adm user list - Lists all the users in the config files.
 - (COMPLETE)  List available boot options in intelligent way.
 - (COMPLETE)  Ability to set-default boot options
 - (COMPLETE)  List-boot Options
-- (COMPLETE)  List grub2 users
+- (IN-PROG)   List grub2 users
+- (IN-PROG)   Add Users users to grub
 - (IN-PROG)   Finalize formatting options for user listings 
-- (IN-PROG)   Manage grub2 users
-- (IN-PROG)   Set grub2 Password
+- (PENDING)   Delete users from grub
 - (PENDING)   Set Boot Options
 - (PENDING)   Set grub2 password for individual menu items
 - (PENDING)   Add "-f|--force" option to "set-default" to allow unknown kernel option to be set as default.
