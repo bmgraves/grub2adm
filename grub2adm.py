@@ -324,6 +324,7 @@ def get_users(u = 0):
 		
 
 # NOTE: 25 total length?
+# STILL IN DEVELOPMENT
 def print_format(name, admin, encrypted, password = ""):
 	t = Terminal()
 	name_pad = 10
@@ -351,10 +352,14 @@ def user_print(users, show_pass):
 		else:
 			print_format(NAME, ADMIN, ENCRYPTED)
 			
-
+#########################################
 		
 
 
+# Entry tpoint for the users list option. Begins the process of putting together
+# A user list and sends it into printing functions. This Function is a closed loop
+# And should not be called directly within the program. If you Need
+# A list of users internally, call "get_users()"
 def user_list(args = 0):
 	if (user_check_format()):
 
@@ -365,10 +370,14 @@ def user_list(args = 0):
 			users = get_users(user)
 		user_print(users, args.password)
 
+# Feature not Implemented
 def user_del(args):
 	user = args.user[0]
 	print "User delete Function: " + user
 
+# make_password prompts the user for a password, asks to confirm it
+# and then returns the password as either cleartext or an encrypted
+# grub_pbkdf2_sha512 string VIA passlibs module.
 def make_password(unencrypted):
 	loop = True
 	passwd = ""
@@ -384,7 +393,6 @@ def make_password(unencrypted):
 		return passwd
 	else:
 		return grub_pbkdf2_sha512.encrypt(passwd)
-		#return call(['grub2-mkpasswd-pbkdf2'])
 	
 	
 
@@ -397,8 +405,13 @@ def user_add(args):
 	else:
 		password_type = 'password_pbkdf2'
 	raw_user = [password_type, args.user[0], make_password(args.unencrypted)]
-	#print raw_user
-	print build_user(" ".join(raw_user))
+	u = build_user(" ".join(raw_user))
+	if args.admin:
+		u[args.user[0]]["admin"] = True
+	users = get_users()
+	users.update(u)
+	user_print(users, False)
+
 
 	
 	
@@ -453,8 +466,7 @@ subparsers_user = parser_user.add_subparsers(title='Available Commands', help='A
 # Sub parser settings for  grub2adm user add
 parser_useradd = subparsers_user.add_parser('add', help='add new user to grub2 user list')
 parser_useradd.add_argument('user', nargs=1, metavar='<USER>', help='username to add')
-parser_useradd.add_argument('-p', '--password', help='Will prompt for users password', action='store_true', default=False)
-parser_useradd.add_argument('-s', '--superuser', help='designates new user as grub2 superuser', action='store_true', default=False)
+parser_useradd.add_argument('-a', '--admin', help='designates new user as grub2 superuser', action='store_true', default=False)
 parser_useradd.add_argument('-u', '--unencrypted', help='store password unencrypted', action='store_true', default=False)
 parser_useradd.set_defaults(func=user_add)
 
